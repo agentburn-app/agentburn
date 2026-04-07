@@ -1,0 +1,77 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                   String   @id @default(cuid()) @db.VarChar(30)
+  email                String   @unique @db.VarChar(255)
+  name                 String?  @db.VarChar(255)
+  passwordHash         String   @db.VarChar(255)
+  role                 String   @default("user") @db.VarChar(20)
+  plan                 String   @default("free") @db.VarChar(20)
+  stripeCustomerId     String?  @unique @db.VarChar(255)
+  stripeSubscriptionId String?  @db.VarChar(255)
+  stripePriceId        String?  @db.VarChar(255)
+  stripeCurrentPeriodEnd DateTime?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@index([email])
+}
+
+model Agent {
+  id          String   @id @default(cuid()) @db.VarChar(30)
+  name        String   @db.VarChar(255)
+  description String?  @db.Text
+  projectId   String?  @db.VarChar(255)
+  tags        String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  costEvents   CostEvent[]
+  budgetAlerts BudgetAlert[]
+
+  @@index([projectId])
+}
+
+model CostEvent {
+  id           String   @id @default(cuid()) @db.VarChar(30)
+  agentId      String   @db.VarChar(30)
+  provider     String   @db.VarChar(100)
+  model        String?  @db.VarChar(100)
+  operation    String   @db.VarChar(100)
+  inputTokens  Int?
+  outputTokens Int?
+  costUsd      Float
+  taskId       String?  @db.VarChar(255)
+  workflowId   String?  @db.VarChar(255)
+  metadata     String?  @db.Text
+  timestamp    DateTime @default(now())
+
+  agent Agent @relation(fields: [agentId], references: [id], onDelete: Cascade)
+
+  @@index([agentId])
+  @@index([provider])
+  @@index([timestamp])
+  @@index([taskId])
+  @@index([workflowId])
+}
+
+model BudgetAlert {
+  id         String   @id @default(cuid()) @db.VarChar(30)
+  agentId    String?  @db.VarChar(30)
+  name       String   @db.VarChar(255)
+  budgetUsd  Float
+  periodType String   @db.VarChar(20)
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+
+  agent Agent? @relation(fields: [agentId], references: [id], onDelete: SetNull)
+
+  @@index([agentId])
+}
