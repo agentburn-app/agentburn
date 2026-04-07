@@ -215,7 +215,7 @@ ALERT_WEBHOOK_URL="https://hooks.slack.com/services/T00/B00/xxx"</code></pre>
 <li>Real-time dashboards</li>
 <li>Budget alerts</li>
 <li>REST API for ingestion</li>
-<li>SQLite or MySQL database</li>
+<li>MySQL database via Prisma</li>
 </ul>
 
 <p>Deploy it on any Node.js host: a VPS, your Kubernetes cluster, a Raspberry Pi. It's a standard Next.js app with Prisma ORM — nothing exotic.</p>

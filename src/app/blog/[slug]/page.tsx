@@ -278,7 +278,7 @@ export default async function BlogPostPage({
               Try the Dashboard
             </Link>
             <a
-              href="https://github.com/agentburn-io/agentburn"
+              href="https://github.com/agentburn-app/agentburn"
               target="_blank"
               rel="noopener noreferrer"
               className="rounded-lg border border-white/10 px-5 py-2.5 text-sm font-medium text-zinc-300 hover:bg-white/[0.04] transition"

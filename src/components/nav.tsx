@@ -61,7 +61,7 @@ export function Nav() {
             </Link>
           ))}
           <Link
-            href="https://github.com"
+            href="https://github.com/agentburn-app/agentburn"
             target="_blank"
             rel="noopener noreferrer"
             className="text-[13px] text-surface-200/50 transition-colors hover:text-white"
