@@ -26,6 +26,7 @@ detection, team collaboration, and enterprise governance.
 ```
 .
 ├── packages/core/   # the measurement engine (TypeScript, pure + tested)
+├── packages/sdk-js/ # the JavaScript/TypeScript SDK
 ├── schema/          # the core database schema (Prisma, MySQL/SQLite)
 ├── docs/            # event spec, pricing model, self-hosting, API
 └── examples/        # event payloads + curl
@@ -41,7 +42,22 @@ same inputs, same cost, every time.
 git clone https://github.com/agentburn-app/agentburn.git
 cd agentburn
 npm install
-npm test          # run the core test suite
+npm test          # run the core + SDK test suites
+```
+
+Send your first event with the SDK:
+
+```ts
+import { AgentBurn } from "@agentburn/sdk";
+
+const agentburn = new AgentBurn({ apiKey: process.env.AGENTBURN_KEY });
+const { cost, explanation } = await agentburn.track({
+  provider: "openai",
+  model: "gpt-4o",
+  inputTokens: 1_200_000,
+  outputTokens: 42_000,
+});
+console.log(cost, explanation);
 ```
 
 The heart of it — turn raw usage into an explainable cost:

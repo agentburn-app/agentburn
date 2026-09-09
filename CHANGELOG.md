@@ -2,6 +2,11 @@
 
 All notable changes to the AgentBurn open core are recorded here.
 
+## [Unreleased]
+
+- `@agentburn/sdk`: JavaScript/TypeScript SDK — `track()` / `trackBatch()`,
+  automatic idempotency keys, retry on 429/5xx, pluggable base URL.
+
 ## [0.1.0] — 2026-09-09
 
 Initial public release of the open core:
