@@ -28,6 +28,7 @@ detection, team collaboration, and enterprise governance.
 ├── packages/core/   # the measurement engine (TypeScript, pure + tested)
 ├── packages/sdk-js/ # the JavaScript/TypeScript SDK
 ├── packages/sdk-php/ # the PHP SDK
+├── packages/sdk-python/ # the Python SDK
 ├── schema/          # the core database schema (Prisma, MySQL/SQLite)
 ├── docs/            # event spec, pricing model, self-hosting, API
 └── examples/        # event payloads + curl
