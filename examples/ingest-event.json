@@ -1,0 +1,18 @@
+{
+  "idempotency_key": "op-0001",
+  "timestamp": "2026-09-09T14:00:00.000Z",
+  "provider": "openai",
+  "model": "gpt-4o",
+  "inputTokens": 1200000,
+  "outputTokens": 42000,
+  "cachedInputTokens": 0,
+  "reasoningTokens": 0,
+  "environment": "prod",
+  "agentId": "research-agent",
+  "workflowId": "wf_123",
+  "taskId": "task_456",
+  "latencyMs": 1234,
+  "status": "ok",
+  "source": "sdk-js",
+  "customMetadata": { "repo": "acme/app", "pr": 42 }
+}

@@ -1,0 +1,105 @@
+# AgentBurn
+
+**Know what every agent costs. Know why. Know what it accomplished.**
+
+AgentBurn is open-source AI agent cost intelligence. Track what your agents
+spend across models, providers, tools, and workloads — and, critically,
+*why* each number is correct.
+
+This repository is the **open-source core** of AgentBurn:
+
+- the canonical **event schema**
+- the deterministic **cost engine** (itemized, versioned, explainable)
+- **event validation** and **idempotency**
+- **budgets** and **forecast** math
+- **usage aggregation**
+
+[agentburn.dev](https://agentburn.dev) is the **commercial product** built on
+top of it: managed hosting, managed pricing intelligence (automated
+provider-price change detection), long retention, forecasting, anomaly
+detection, team collaboration, and enterprise governance.
+
+---
+
+## What this repo contains
+
+```
+.
+├── packages/core/   # the measurement engine (TypeScript, pure + tested)
+├── schema/          # the core database schema (Prisma, MySQL/SQLite)
+├── docs/            # event spec, pricing model, self-hosting, API
+└── examples/        # event payloads + curl
+```
+
+The core is intentionally **pure and dependency-free** — no HTTP, no
+database, no framework. Everything in `packages/core/src` is deterministic:
+same inputs, same cost, every time.
+
+## Quick start
+
+```bash
+git clone https://github.com/agentburn-app/agentburn.git
+cd agentburn
+npm install
+npm test          # run the core test suite
+```
+
+The heart of it — turn raw usage into an explainable cost:
+
+```ts
+import { computeCost, explainCost } from "@agentburn/core";
+
+const breakdown = computeCost(
+  { inputTokens: 1_200_000, outputTokens: 42_000, cachedInputTokens: 0, reasoningTokens: 0 },
+  { inputPrice: 2.5, outputPrice: 10.0, cachedInputPrice: 0.625, reasoningPrice: 1.25 },
+  { provider: "OpenAI", model: "gpt-4o", pricingVersionId: "v2026-08-14", verifiedAt: "2026-08-15" }
+);
+
+console.log(explainCost(breakdown));
+// OpenAI → gpt-4o → version v2026-08-14 (source verified 2026-08-15):
+//   1.2M input × $2.50 + 42K output × $10.00 = $3.42
+```
+
+If AgentBurn tells you a number, it can always show you the arithmetic.
+
+---
+
+## Open core vs. AgentBurn Cloud
+
+| | Open source (this repo) | AgentBurn Cloud |
+|---|---|---|
+| Event spec | ✅ | ✅ |
+| Ingestion engine | ✅ | ✅ (managed) |
+| Deterministic cost engine | ✅ | ✅ |
+| Provider/model/version abstraction | ✅ | ✅ |
+| Basic budgets & forecasting math | ✅ | ✅ |
+| SDKs | ✅ | ✅ |
+| Self-hosting | ✅ | — |
+| Managed infrastructure | — | ✅ |
+| Managed pricing intelligence (auto price-change detection) | — | ✅ |
+| Historical pricing | — | ✅ |
+| Advanced analytics, anomaly detection, optimization | — | ✅ |
+| Teams, RBAC, enterprise governance | — | ✅ |
+| Long-term retention | — | ✅ |
+
+The measurement infrastructure is open. The intelligence and managed
+service are commercial.
+
+## Why pricing is versioned
+
+Provider prices change constantly. AgentBurn never silently re-prices your
+history: every cost is calculated against the **pricing version** that was
+in effect at the time, and the version is recorded on every event. See
+[docs/pricing.md](docs/pricing.md).
+
+## Links
+
+- **Try AgentBurn Cloud** — [agentburn.dev](https://agentburn.dev)
+- **Event spec** — [docs/events.md](docs/events.md)
+- **Pricing & explainability** — [docs/pricing.md](docs/pricing.md)
+- **Self-hosting** — [docs/self-hosting.md](docs/self-hosting.md)
+- **API** — [docs/api.md](docs/api.md)
+
+## License
+
+MIT — see [LICENSE](LICENSE).

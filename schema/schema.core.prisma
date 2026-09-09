@@ -1,0 +1,168 @@
+// AgentBurn open-core schema.
+//
+// This is the measurement + pricing + budgets half of the system. The
+// Cloud product adds tenant/auth/billing models (User, Organization,
+// OrganizationMember, Project, ApiKey, AuditLog) and Stripe webhooks on top
+// of exactly these tables. UsageEvent.organizationId/projectId are plain
+// strings here; the Cloud layer owns their meaning.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Provider {
+  id               String   @id @default(cuid()) @db.VarChar(30)
+  slug             String   @unique @db.VarChar(100)
+  name             String   @db.VarChar(255)
+  pricingSourceUrl String?  @db.VarChar(500)
+  sourceType       String   @default("manual") @db.VarChar(20)
+  adapter          String?  @db.VarChar(50)
+  isActive         Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  models           Model[]
+}
+
+model Model {
+  id          String   @id @default(cuid()) @db.VarChar(30)
+  providerId  String   @db.VarChar(30)
+  provider    Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  name        String   @db.VarChar(255)
+  displayName String?  @db.VarChar(255)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  pricingVersions PricingVersion[]
+  currentPricing  CurrentModelPricing?
+  pricingChanges  PricingChange[]
+
+  @@unique([providerId, name])
+  @@index([providerId])
+}
+
+model PricingVersion {
+  id                 String   @id @default(cuid()) @db.VarChar(30)
+  modelId            String   @db.VarChar(30)
+  model              Model    @relation(fields: [modelId], references: [id], onDelete: Cascade)
+  inputPrice         Float
+  outputPrice        Float
+  cachedInputPrice   Float?
+  reasoningPrice     Float?
+  imagePrice         Float?
+  audioPrice         Float?
+  currency           String   @default("USD") @db.VarChar(10)
+  unit               String   @default("1M tokens") @db.VarChar(50)
+  effectiveFrom      DateTime
+  effectiveTo        DateTime?
+  sourceUrl          String   @db.VarChar(500)
+  sourceType         String   @db.VarChar(20)
+  retrievedAt        DateTime
+  verifiedAt         DateTime?
+  verificationStatus String   @default("pending") @db.VarChar(20)
+  createdBy          String?  @db.VarChar(30)
+  createdAt          DateTime @default(now())
+
+  @@index([modelId, effectiveFrom])
+}
+
+model CurrentModelPricing {
+  modelId          String   @id @db.VarChar(30)
+  model            Model    @relation(fields: [modelId], references: [id], onDelete: Cascade)
+  pricingVersionId String   @db.VarChar(30)
+  updatedAt        DateTime @updatedAt
+}
+
+model PricingChange {
+  id             String   @id @default(cuid()) @db.VarChar(30)
+  modelId        String   @db.VarChar(30)
+  model          Model    @relation(fields: [modelId], references: [id], onDelete: Cascade)
+  proposedPrices Json
+  detectedAt     DateTime @default(now())
+  detectedBy     String   @db.VarChar(100)
+  sourceUrl      String?  @db.VarChar(500)
+  diffSummary    String?  @db.Text
+  status         String   @default("pending") @db.VarChar(20)
+  reviewedBy     String?  @db.VarChar(30)
+  reviewedAt     DateTime?
+
+  @@index([modelId, status])
+}
+
+model UsageEvent {
+  id                String   @id @default(cuid()) @db.VarChar(30)
+  organizationId    String   @db.VarChar(30)
+  projectId         String   @db.VarChar(30)
+  idempotencyKey    String   @db.VarChar(255)
+  timestamp         DateTime
+  provider          String   @db.VarChar(100)
+  model             String?  @db.VarChar(100)
+  environment       String?  @db.VarChar(50)
+  agentId           String?  @db.VarChar(255)
+  workflowId        String?  @db.VarChar(255)
+  taskId            String?  @db.VarChar(255)
+  inputTokens       Int      @default(0)
+  outputTokens      Int      @default(0)
+  cachedInputTokens Int      @default(0)
+  reasoningTokens   Int      @default(0)
+  latencyMs         Int?
+  status            String   @default("ok") @db.VarChar(20)
+  currency          String   @default("USD") @db.VarChar(10)
+  calculatedCost    Float?
+  costBreakdown     Json?
+  pricingVersionId  String?  @db.VarChar(30)
+  pricingStatus     String   @default("unpriced") @db.VarChar(20)
+  source            String?  @db.VarChar(50)
+  customMetadata    Json?
+  lifecycle         String   @default("active") @db.VarChar(20)
+  tombstonedAt      DateTime?
+  createdAt         DateTime @default(now())
+
+  @@unique([projectId, idempotencyKey])
+  @@index([projectId, timestamp])
+  @@index([pricingStatus])
+  @@index([lifecycle])
+}
+
+model Budget {
+  id                   String   @id @default(cuid()) @db.VarChar(30)
+  organizationId       String?  @db.VarChar(30)
+  projectId            String?  @db.VarChar(255)
+  agentId              String?  @db.VarChar(30)
+  environment          String?  @db.VarChar(50)
+  name                 String   @db.VarChar(255)
+  amountUsd            Float
+  periodType           String   @db.VarChar(20)
+  warningThresholdPct  Float    @default(80)
+  criticalThresholdPct Float    @default(100)
+  forecastEnabled      Boolean  @default(true)
+  isActive             Boolean  @default(true)
+  createdBy            String?  @db.VarChar(30)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  events               BudgetEvent[]
+
+  @@index([projectId])
+  @@index([agentId])
+  @@index([isActive])
+}
+
+model BudgetEvent {
+  id            String   @id @default(cuid()) @db.VarChar(30)
+  budgetId      String   @db.VarChar(30)
+  budget        Budget   @relation(fields: [budgetId], references: [id], onDelete: Cascade)
+  periodStart   DateTime
+  thresholdType String   @db.VarChar(20)
+  spendUsd      Float
+  percentUsed   Float
+  forecastUsd   Float?
+  unpricedCount Int      @default(0)
+  createdAt     DateTime @default(now())
+
+  @@unique([budgetId, periodStart, thresholdType])
+  @@index([budgetId])
+}
