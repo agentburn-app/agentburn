@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "agentburn"
+name = "agentburn-sdk"
 version = "0.1.0"
 description = "AgentBurn Python SDK — send usage events and read back itemized, explainable costs."
 readme = "README.md"

@@ -1,10 +1,12 @@
-# agentburn (Python)
+# agentburn-sdk (Python)
 
 The AgentBurn Python SDK. Send usage events and read back itemized,
 explainable costs. Python 3.8+, no third-party dependencies (stdlib only).
 
+Installs as the `agentburn-sdk` distribution; imports as `agentburn`.
+
 ```bash
-pip install agentburn
+pip install agentburn-sdk
 ```
 
 ## Usage

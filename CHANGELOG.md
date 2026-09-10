@@ -8,7 +8,7 @@ All notable changes to the AgentBurn open core are recorded here.
   automatic idempotency keys, retry on 429/5xx, pluggable base URL.
 - `agentburn/sdk` (PHP): same surface for PHP 8.1+ — curl-backed client,
   injectable transport, idempotency helper.
-- `agentburn` (Python): same surface for Python 3.8+ — urllib-backed client,
+- `agentburn-sdk` (Python): same surface for Python 3.8+ — urllib-backed client,
   stdlib-only, injectable transport.
 
 ## [0.1.0] — 2026-09-09
