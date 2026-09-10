@@ -2,9 +2,11 @@
 
 **Know what every agent costs. Know why. Know what it accomplished.**
 
-AgentBurn is open-source AI agent cost intelligence. Track what your agents
-spend across models, providers, tools, and workloads — and, critically,
-*why* each number is correct.
+AgentBurn is the economic intelligence layer for AI-powered software. It
+measures what your agents, models, tools, and workflows consume and cost —
+then helps you understand and optimize that spend. Every number is
+server-computed from versioned, verified pricing and explained down to the
+arithmetic.
 
 This repository is the **open-source core** of AgentBurn:
 
@@ -113,6 +115,8 @@ in effect at the time, and the version is recorded on every event. See
 ## Links
 
 - **Try AgentBurn Cloud** — [agentburn.dev](https://agentburn.dev)
+- **Live model pricing** — [agentburn.dev/pricing](https://agentburn.dev/pricing)
+- **Docs** — [agentburn.dev/docs](https://agentburn.dev/docs)
 - **Event spec** — [docs/events.md](docs/events.md)
 - **Pricing & explainability** — [docs/pricing.md](docs/pricing.md)
 - **Self-hosting** — [docs/self-hosting.md](docs/self-hosting.md)
